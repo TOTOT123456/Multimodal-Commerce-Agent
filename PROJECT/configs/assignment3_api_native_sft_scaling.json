@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "experiment_id": "assignment3_api_native_sft_scaling_20260802",
+  "objective": "measure Qwen3-4B/8B planner quality while scaling the Assignment3 API-native SFT pool from the PDF-prescribed 9K base construction to the 54K project expansion",
+  "terminology": "data scaling study; not a leave-one-factor-out ablation",
+  "protocol_revision": {
+    "date": "2026-08-02",
+    "change": "remove the 1200-row sealed confirmation from the canonical SFT-scale decision flow; retain its completed outputs only as a supplementary stability diagnostic",
+    "selection_effect": "none; model-size winners remain determined exclusively by the pre-locked development rule",
+    "canonical_post_lock_flow": "selection lock -> Legacy 6000/API 1000 protected replay"
+  },
+  "pdf_scope": {
+    "source": "KNOWLEDGE/LLM电商导购助手高阶-实验作业-3.pdf",
+    "literal_base_rows": 9000,
+    "literal_construction": {
+      "single_intent": 3000,
+      "multi_candidate_order_shuffled": 4000,
+      "multi_same_type_distractors": 2000
+    },
+    "project_expansion": "scale the same 3:4:2 construction ratio with audited API-native query variants up to 54K; the PDF does not literally state 54K"
+  },
+  "data": {
+    "source_split": "assignment3_api_native_train",
+    "compact": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_100tool_api/sft_compact.jsonl",
+    "runtime": "PROJECT/finetune/outputs/tooltrace-data-cache/runs/assignment3_100tool_sft.runtime.jsonl",
+    "nested_sizes": [9000, 18000, 36000, 54000],
+    "subset_seed": 20260726,
+    "nested_subset_dir": "PROJECT/finetune/outputs/tooltrace-data-cache/assignment3_sft_ablation",
+    "audit": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_100tool_api/sft_ablation/data_audit.json",
+    "gold_candidate_coverage": 1.0,
+    "legacy_rows_in_main_curve": 0,
+    "legacy_role": "Legacy 24K is excluded from the main scaling curve; it remains only historical cross-style-control evidence"
+  },
+  "training": {
+    "models": ["4b", "8b"],
+    "fixed_recipe_source": "the completed API-native 9K development search, frozen before this current-route scale evaluation",
+    "learning_rate": 0.00005,
+    "epochs": 3,
+    "lora_rank": 32,
+    "lora_alpha": 64,
+    "lora_dropout": 0.05,
+    "target_modules": "all-linear",
+    "max_length": 2048,
+    "effective_batch_size": 32,
+    "lr_scheduler_type": "cosine",
+    "warmup_ratio": 0.05,
+    "weight_decay": 0.1,
+    "seed": 20260725,
+    "data_seed": 20260725,
+    "checkpoint_pattern": "PROJECT/finetune/outputs/tooltrace-a3-ablate-{model}-n{size}-lr5em5-e3-r32-d05/checkpoint-{step}",
+    "reuse_policy": "reuse only after trainer_state, args, dataset path, LoRA recipe and adapter presence all match; this is checkpoint reuse, not a claim of fresh retraining"
+  },
+  "retrieval_route": {
+    "canonical_route": "PROJECT/configs/retrieval_canonical_route.json",
+    "first_stage": "BM25/easy2 weighted RRF N=40,w=0.8,k=5",
+    "reranker": "bge-reranker-v2-m3 mixed_typed3_mined4 exact Top-20",
+    "second_stage": "source_weight=0.4,rrf_k=8",
+    "planner_candidates": 10
+  },
+  "evaluation": {
+    "views": ["global", "rag"],
+    "selection": {
+      "gold": "PROJECT/data/tool_call_trace/_aux/assignment3/planner_joint_depth_reselection_20260801/selection.jsonl",
+      "global_input": "PROJECT/data/tool_call_trace/_aux/assignment3/r20p10_second_rrf_optimization_20260801/selection/inputs/queries_label_free.jsonl",
+      "rag_input": "PROJECT/data/tool_call_trace/_aux/assignment3/r20p10_second_rrf_optimization_20260801/selection/inputs/r20p10_w040_k008.jsonl",
+      "rows": 2400,
+      "role": "scale selection"
+    },
+    "strict_combo_isolated": {
+      "gold": "PROJECT/data/tool_call_trace/_aux/assignment3/canonical_planner_candidate_depth_isolated_20260801/dev.jsonl",
+      "global_input": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_api_native_sft_scaling_20260802/strict_combo_isolated/queries_label_free.jsonl",
+      "rag_input": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_api_native_sft_scaling_20260802/strict_combo_isolated/rag_r20p10.jsonl",
+      "rows": 1200,
+      "role": "selection guard and scaling-shape diagnostic"
+    },
+    "protected": {
+      "legacy6000": {
+        "gold": "PROJECT/data/tool_call_trace/test.jsonl",
+        "global_input": "PROJECT/data/tool_call_trace/_aux/assignment3/r20p10_second_rrf_optimization_20260801/protected_after_promotion/legacy6000/inputs/queries_label_free.jsonl",
+        "rag_input": "PROJECT/data/tool_call_trace/_aux/assignment3/r20p10_second_rrf_optimization_20260801/protected_after_promotion/legacy6000/inputs/rag_r20p10_w040_k008.jsonl",
+        "rows": 6000
+      },
+      "api1000": {
+        "gold": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_100tool_api/test_api/test.jsonl",
+        "global_input": "PROJECT/data/tool_call_trace/_aux/assignment3/r20p10_second_rrf_optimization_20260801/protected_after_promotion/api1000/inputs/queries_label_free.jsonl",
+        "rag_input": "PROJECT/data/tool_call_trace/_aux/assignment3/r20p10_second_rrf_optimization_20260801/protected_after_promotion/api1000/inputs/rag_r20p10_w040_k008.jsonl",
+        "rows": 1000
+      },
+      "selection_use_allowed": false
+    }
+  },
+  "supplementary_diagnostics": {
+    "sealed_confirmation_1200": {
+      "gold": "PROJECT/data/tool_call_trace/_aux/assignment3/r20p10_second_rrf_optimization_20260801/sealed_confirmation_snapshot/confirmation.jsonl",
+      "global_input": "PROJECT/data/tool_call_trace/_aux/assignment3/r20p10_second_rrf_optimization_20260801/sealed_confirmation/inputs/queries_label_free.jsonl",
+      "rag_input": "PROJECT/data/tool_call_trace/_aux/assignment3/r20p10_second_rrf_optimization_20260801/sealed_confirmation/inputs/selected_r20p10.jsonl",
+      "rows": 1200,
+      "selection_use_allowed": false,
+      "canonical_stage": false,
+      "role": "optional post-lock stability diagnostic; not required for selection, promotion, or final reporting"
+    }
+  },
+  "selection_rule": {
+    "per_model": true,
+    "primary": "6:1 legacy_compact/api_native weighted selection RAG TraceEM",
+    "tie_breaks": [
+      "minimum selection panel RAG TraceEM desc",
+      "strict-combo-isolated RAG TraceEM desc",
+      "6:1 weighted selection global TraceEM desc",
+      "data size asc on exact ties"
+    ],
+    "canonical_post_lock_flow": "open Legacy 6K and API 1K protected replay immediately after the per-model scale lock",
+    "supplementary_diagnostic": "the completed sealed 1.2K comparison is retained as non-decisional evidence only",
+    "protected_boundary": "Legacy 6K and API 1K are opened only after the per-model scale lock"
+  }
+}

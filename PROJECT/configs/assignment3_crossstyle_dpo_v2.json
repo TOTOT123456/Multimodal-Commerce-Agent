@@ -1,0 +1,134 @@
+{
+  "schema_version": 2,
+  "task": "assignment3_100tool_crossstyle_rag10_dpo_v2",
+  "protocol_frozen_at": "2026-07-29",
+  "status": "protocol_frozen_before_dpo_v2_preference_mining_and_training",
+  "redo_scope": {
+    "preserve_successful_crossstyle_sft_parent": true,
+    "preserve_dpo_v1_as_failed_baseline": true,
+    "rebuild_preference_protocol_data_training_selection_and_evaluation": true
+  },
+  "reference": {
+    "pdf": "KNOWLEDGE/LLM电商导购助手高阶-实验作业-3.pdf",
+    "adaptation": [
+      "Use the gold static trajectory as chosen and an actual current-SFT generation error as rejected.",
+      "Use 2000 high-quality pairs, within the PDF recommendation of 2000 to 5000.",
+      "Train Qwen3-4B and Qwen3-8B with LoRA DPO and compare against their exact SFT parents.",
+      "The 100-tool version uses deployment-equivalent RAG Top-10 and evaluates candidate-order invariance."
+    ]
+  },
+  "parent_sft": {
+    "data": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_crossstyle_rag10/sft_compact.jsonl",
+    "rows": 77724,
+    "qwen3_4b": "PROJECT/finetune/outputs/tooltrace-a3-crossstyle-rag10-sft4-e1-lr5e5-bs16/checkpoint-2429",
+    "qwen3_8b": "PROJECT/finetune/outputs/tooltrace-a3-crossstyle-rag10-sft8-e1-lr5e5-bs16/checkpoint-2429"
+  },
+  "sealed_evaluation": {
+    "root": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_crossstyle_rag10/dpo_v2/eval_protocol",
+    "dev_rows": 1200,
+    "final_rows": 1200,
+    "styles_per_split": {
+      "api_native": 600,
+      "legacy_compact": 600
+    },
+    "tool_count_per_style": {
+      "1": 100,
+      "2": 100,
+      "3": 100,
+      "4": 100,
+      "5": 100,
+      "6": 100
+    },
+    "source_trace_disjoint_across_four_cells": true,
+    "candidate_order_views": [
+      "original",
+      "reverse",
+      "hash_shuffle"
+    ],
+    "dev_use": "checkpoint selection and guardrails only",
+    "final_use": "one-shot evaluation after selection only",
+    "training_use_allowed": false
+  },
+  "preference_mining": {
+    "pool_rows": 20000,
+    "styles": {
+      "assignment3_api_native_train": 10000,
+      "legacy_train": 10000
+    },
+    "candidate_protocol": "deployment-equivalent RAG Top-10 with all gold tools present",
+    "negative_generators": [
+      "current cross-style Qwen3-4B SFT parent",
+      "current cross-style Qwen3-8B SFT parent"
+    ],
+    "old_or_early_model_negatives_allowed": false,
+    "candidate_order_perturbations": [
+      "reverse",
+      "hash_shuffle"
+    ],
+    "sampling": {
+      "temperature": 0.8,
+      "top_p": 0.9,
+      "top_k": 40,
+      "samples_per_prompt": 2
+    }
+  },
+  "preference_selection": {
+    "target_pairs": 2000,
+    "minimum_pairs_per_style": 400,
+    "remaining_pair_policy": "fill from the natural current-parent residual-error distribution after both style floors are met",
+    "one_pair_per_query": true,
+    "strict_semantic_errors_only": true,
+    "format_only_pairs_allowed": false,
+    "synthetic_or_rule_generated_rejected_allowed": false,
+    "order_only_requires_explicit_order_or_dependency_evidence": true,
+    "monitor_percent_by_trace_id": 10,
+    "new_dev_or_final_source_trace_allowed": false,
+    "new_dev_or_final_query_text_read_by_builder": false
+  },
+  "dpo_grid": {
+    "models": [
+      "Qwen3-4B",
+      "Qwen3-8B"
+    ],
+    "beta": 0.1,
+    "learning_rates": [
+      5e-07,
+      1e-06
+    ],
+    "epochs": 1,
+    "loss_type": "sigmoid",
+    "max_length": 768,
+    "effective_global_batch_size": 16,
+    "lora": {
+      "rank": 16,
+      "alpha": 32,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "seed": 20260729,
+    "rationale": "DPO-v1 used learning_rate=5e-6 and caused a large Legacy regression; v2 holds beta at the standard 0.1 and directly ablates 5x and 10x smaller update sizes."
+  },
+  "selection": {
+    "primary": "three-candidate-order macro TraceEM on sealed dev",
+    "secondary": [
+      "worst-candidate-order TraceEM",
+      "original-order TraceEM",
+      "strict output rate"
+    ],
+    "original_order_guardrails": {
+      "overall_trace_delta_min": -0.002,
+      "multi_trace_delta_min": -0.005,
+      "each_style_trace_delta_min": -0.005,
+      "strict_output_delta_min": -0.002
+    },
+    "select_4b_and_8b_independently": true,
+    "parent_remains_deployment_choice_if_all_dpo_candidates_fail": true
+  },
+  "post_selection": {
+    "sealed_final": "one evaluation matrix per SFT parent and selected DPO endpoint",
+    "historical_api_native_1k_and_legacy_6k": "non-selection regression audit only because their results were already observed",
+    "no_post_final_tuning_or_checkpoint_reselection": true,
+    "protocol_metrics_must_not_be_cross-merged": true
+  },
+  "scope": "100-tool synthetic closed-set static planning; not live tool execution or online generalization"
+}

@@ -1,0 +1,267 @@
+{
+  "schema_version": 3,
+  "task": "assignment3_api_native_tool_trace_stress",
+  "status": "complete",
+  "completed_at_utc": "2026-07-26",
+  "scope": "固定100工具、API原生2400条query、与train/frozen test隔离的开发压力测试",
+  "dataset_policy": {
+    "only_evaluation_dataset": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/dev.jsonl",
+    "training_use_allowed": false,
+    "frozen_test_used_for_inference_or_selection": false
+  },
+  "models": {
+    "base": "PROJECT/models/Qwen/Qwen3-4B",
+    "sft": {
+      "base": "PROJECT/models/Qwen/Qwen3-4B",
+      "adapter": "PROJECT/finetune/outputs/tooltrace-sft4_s1/checkpoint-878"
+    }
+  },
+  "fixed_inputs": {
+    "catalog": "PROJECT/configs/tool_catalog.jsonl",
+    "api_stress_dev": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/dev.jsonl",
+    "tuned_rankings": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/rag_rankings.jsonl",
+    "untuned_rankings": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/rag_untuned_rankings.jsonl",
+    "query_only_input": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/queries_label_free_k5.jsonl",
+    "rag_inputs": {
+      "5": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/rag_k5_label_free.jsonl",
+      "10": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/rag_k10_label_free.jsonl",
+      "20": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/rag_k20_label_free.jsonl",
+      "30": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/rag_k30_label_free.jsonl"
+    },
+    "generation_audit": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/generation_audit.json",
+    "isolation_audit": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/isolation_audit.json",
+    "prompt_versions": {
+      "query_only": "tool-trace-query-only-v1",
+      "global_and_rag": "tool-trace-v1"
+    },
+    "parser_version": "strict-tools-json-v1",
+    "hashes": {
+      "catalog": "287cb174515d3706080e4e093b17248bb6965c4f63362c715c1c898b9101eb67",
+      "api_stress_dev": "91dfa0bdc4f63e3349f75321b8a55ef815f891e2d0f9524727f305aa8a4ed6b7",
+      "tuned_rankings": "928fa8ee726cfe53a3f7ce988bdc656e899618a622945b72eea48c8d17f50ac7",
+      "untuned_rankings": "fda72283ff05af3c128a311ced23191d83848995718cb3e3dd485e87674f2094",
+      "query_only_input": "59a971118dbe18adae302ba2a3da60cd616c9c252373d1db9a7af9a988727eca",
+      "rag_k5_input": "19ff060c2b218ef45d6e4933ee592b21dadfc205490ee12e4dc98a997ccf81f5",
+      "rag_k10_input": "9ef7b9977ade059deed8e83ed1c2c0be7e564cfe0eda51be7cc61a2d570980b4",
+      "rag_k20_input": "b151eecd6b17cda710c5119d2e57e9b3e766c9b810e68659922733b4431dab6e",
+      "rag_k30_input": "207790715272f8712d54ff9758a1428673ea406488bad0d880cbb0fd9b81c351"
+    }
+  },
+  "decoding": {
+    "enable_thinking": false,
+    "do_sample": false,
+    "max_new_tokens": 128,
+    "guided_or_constrained_decoding": false
+  },
+  "protocol_names": {
+    "query_only": "闭卷Wo-RAG：不提供catalog或候选工具",
+    "global": "full-catalog：无检索裁剪，但提供全部100工具",
+    "rag": "RAG@K：只提供检索得到的K个候选工具"
+  },
+  "matrix": [
+    {
+      "cell_id": "qwen3_4b_base_query_only",
+      "stage": "base",
+      "view": "query_only",
+      "status": "complete",
+      "set_em": 0.0125,
+      "trace_em": 0.0125,
+      "json_schema_valid_rate": 0.9991666666666666,
+      "strict_output_valid_rate": 0.014166666666666666
+    },
+    {
+      "cell_id": "qwen3_4b_base_global",
+      "stage": "base",
+      "view": "global",
+      "status": "complete",
+      "set_em": 0.49,
+      "trace_em": 0.48625,
+      "json_schema_valid_rate": 0.99125,
+      "strict_output_valid_rate": 0.94125
+    },
+    {
+      "cell_id": "qwen3_4b_base_rag_k5",
+      "stage": "base",
+      "view": "rag",
+      "candidate_k": 5,
+      "status": "complete",
+      "set_em": 0.46958333333333335,
+      "trace_em": 0.4658333333333333,
+      "json_schema_valid_rate": 1.0,
+      "strict_output_valid_rate": 0.8279166666666666
+    },
+    {
+      "cell_id": "qwen3_4b_base_rag_k10",
+      "stage": "base",
+      "view": "rag",
+      "candidate_k": 10,
+      "status": "complete",
+      "set_em": 0.49875,
+      "trace_em": 0.49666666666666665,
+      "json_schema_valid_rate": 1.0,
+      "strict_output_valid_rate": 0.9004166666666666
+    },
+    {
+      "cell_id": "qwen3_4b_base_rag_k20",
+      "stage": "base",
+      "view": "rag",
+      "candidate_k": 20,
+      "status": "complete",
+      "set_em": 0.5441666666666667,
+      "trace_em": 0.5433333333333333,
+      "json_schema_valid_rate": 1.0,
+      "strict_output_valid_rate": 0.9104166666666667
+    },
+    {
+      "cell_id": "qwen3_4b_base_rag_k30",
+      "stage": "base",
+      "view": "rag",
+      "candidate_k": 30,
+      "status": "complete",
+      "set_em": 0.5525,
+      "trace_em": 0.5491666666666667,
+      "json_schema_valid_rate": 0.9995833333333334,
+      "strict_output_valid_rate": 0.9108333333333334
+    },
+    {
+      "cell_id": "qwen3_4b_sft_query_only",
+      "stage": "sft",
+      "view": "query_only",
+      "status": "complete",
+      "set_em": 0.03208333333333333,
+      "trace_em": 0.03208333333333333,
+      "json_schema_valid_rate": 0.9875,
+      "strict_output_valid_rate": 0.04041666666666666
+    },
+    {
+      "cell_id": "qwen3_4b_sft_global",
+      "stage": "sft",
+      "view": "global",
+      "status": "complete",
+      "set_em": 0.95875,
+      "trace_em": 0.95875,
+      "json_schema_valid_rate": 1.0,
+      "strict_output_valid_rate": 0.9979166666666667
+    },
+    {
+      "cell_id": "qwen3_4b_sft_rag_k5",
+      "stage": "sft",
+      "view": "rag",
+      "candidate_k": 5,
+      "status": "complete",
+      "set_em": 0.7991666666666667,
+      "trace_em": 0.7991666666666667,
+      "json_schema_valid_rate": 0.9995833333333334,
+      "strict_output_valid_rate": 0.9104166666666667
+    },
+    {
+      "cell_id": "qwen3_4b_sft_rag_k10",
+      "stage": "sft",
+      "view": "rag",
+      "candidate_k": 10,
+      "status": "complete",
+      "set_em": 0.9208333333333333,
+      "trace_em": 0.9208333333333333,
+      "json_schema_valid_rate": 1.0,
+      "strict_output_valid_rate": 0.99375
+    },
+    {
+      "cell_id": "qwen3_4b_sft_rag_k20",
+      "stage": "sft",
+      "view": "rag",
+      "candidate_k": 20,
+      "status": "complete",
+      "set_em": 0.96375,
+      "trace_em": 0.96375,
+      "json_schema_valid_rate": 1.0,
+      "strict_output_valid_rate": 0.9991666666666666
+    },
+    {
+      "cell_id": "qwen3_4b_sft_rag_k30",
+      "stage": "sft",
+      "view": "rag",
+      "candidate_k": 30,
+      "status": "complete",
+      "set_em": 0.9633333333333334,
+      "trace_em": 0.9633333333333334,
+      "json_schema_valid_rate": 1.0,
+      "strict_output_valid_rate": 0.9983333333333333
+    }
+  ],
+  "retrieval": {
+    "tuned_allhit": {
+      "5": 0.8195833333333333,
+      "10": 0.95,
+      "20": 0.99,
+      "30": 0.99125
+    },
+    "untuned_allhit": {
+      "5": 0.6625,
+      "10": 0.7633333333333333,
+      "20": 0.9175,
+      "30": 0.9608333333333333
+    }
+  },
+  "static_trace_robustness": {
+    "status": "complete",
+    "scope": "仅 query 到有序工具 ID 列表；未实现工具执行或 observation",
+    "evaluation_dataset": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/dev.jsonl",
+    "candidate_order_ablation": {
+      "control": "同一 query 与同一候选工具集合，仅改变 prompt 中候选展示顺序",
+      "candidate_set_equal_rate": 1.0,
+      "full_catalog": {
+        "original_trace_em": 0.95875,
+        "reverse_trace_em": 0.965,
+        "hash_shuffle_trace_em": 0.9625,
+        "reverse_prediction_trace_equal_rate": 0.9629166666666666,
+        "hash_shuffle_prediction_trace_equal_rate": 0.96875
+      },
+      "rag_k20": {
+        "original_trace_em": 0.96375,
+        "reverse_trace_em": 0.9529166666666666,
+        "hash_shuffle_trace_em": 0.95875,
+        "reverse_prediction_trace_equal_rate": 0.9716666666666667,
+        "hash_shuffle_prediction_trace_equal_rate": 0.9779166666666667
+      }
+    },
+    "retrieval_causality": {
+      "control": "相同 SFT checkpoint、解码和 K，仅替换 tuned/untuned 检索排序",
+      "rag_k10": {
+        "tuned": {"allhit": 0.95, "conditional_trace_em": 0.9692982456140351, "trace_em": 0.9208333333333333},
+        "untuned": {"allhit": 0.7633333333333333, "conditional_trace_em": 0.9748908296943232, "trace_em": 0.7441666666666666}
+      },
+      "rag_k20": {
+        "tuned": {"allhit": 0.99, "conditional_trace_em": 0.9734848484848485, "trace_em": 0.96375},
+        "untuned": {"allhit": 0.9175, "conditional_trace_em": 0.9791099000908265, "trace_em": 0.8983333333333333}
+      }
+    },
+    "order_counterfactual": {
+      "dataset": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/static_trace_stress/order_counterfactual/counterfactual_dev.jsonl",
+      "selection": "176 个无内部依赖、仅 read/compute/decision 的 API 原生 query 对；每对仅反转明确请求顺序",
+      "pairs": 176,
+      "rows": 352,
+      "row_trace_em": 0.9829545454545454,
+      "pair_both_trace_em": 0.9659090909090909,
+      "order_following_given_both_set_correct": 1.0,
+      "predicted_trace_changed_rate": 1.0,
+      "isolation_audit": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/static_trace_stress/order_counterfactual/isolation_audit.json",
+      "isolation_strict_ok": true
+    },
+    "summary": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/static_trace_stress/static_trace_robustness_summary.json",
+    "report": "PROJECT/reports/06_Assignment3_100工具实验总报告.md"
+  },
+  "conclusion": "此前所谓SFT Wo-RAG实际是full-catalog开卷协议；真正query-only的SFT SetEM仅3.21%。",
+  "limitations": [
+    "API-native dev仍由同一100工具catalog的能力边界生成，不代表新ontology或线上开放世界分布。",
+    "query-only未出现在SFT训练协议中，因此是有意的分布外闭卷压力诊断。",
+    "当前trace只含静态有序工具ID，不含工具参数、observation、失败重试或状态分支。",
+    "顺序反事实对只覆盖无内部依赖的 read/compute/decision 子集，不能外推到真实工具执行。"
+  ],
+  "artifacts": {
+    "metrics_summary": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/evaluation_summary.json",
+    "report": "PROJECT/reports/06_Assignment3_100工具实验总报告.md",
+    "prediction_directory": "PROJECT/finetune/outputs/preds/tool_trace/api_native_dev_2400",
+    "static_trace_robustness_summary": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/static_trace_stress/static_trace_robustness_summary.json",
+    "static_trace_robustness_report": "PROJECT/reports/06_Assignment3_100工具实验总报告.md"
+  }
+}

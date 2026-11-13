@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.agent.project/specs/agent_state.schema.json",
+  "title": "Compact Tool Planning State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversation_id",
+    "version",
+    "last_turn_id",
+    "last_request_goals",
+    "explicitly_carried_goals",
+    "cancelled_goals",
+    "last_planned_tools",
+    "active_domains",
+    "active_object_types",
+    "updated_at"
+  ],
+  "properties": {
+    "conversation_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "version": {"type": "integer", "minimum": 0},
+    "last_turn_id": {"type": "integer", "minimum": 0},
+    "last_request_goals": {"type": "array", "items": {"$ref": "#/$defs/goal"}},
+    "explicitly_carried_goals": {"type": "array", "items": {"$ref": "#/$defs/goal"}},
+    "cancelled_goals": {"type": "array", "items": {"$ref": "#/$defs/goal"}},
+    "last_planned_tools": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}
+    },
+    "active_domains": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "active_object_types": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "updated_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "goal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "source_turn_ids", "origin", "order"],
+      "properties": {
+        "text": {"type": "string", "minLength": 1},
+        "source_turn_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        },
+        "origin": {"enum": ["current", "carried", "retrieved"]},
+        "order": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

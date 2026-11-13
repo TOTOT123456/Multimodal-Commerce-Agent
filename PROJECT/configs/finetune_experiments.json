@@ -1,0 +1,22 @@
+{
+  "base_lora": {
+    "description": "正式工具轨迹正样本 + 通用闲聊负样本",
+    "train_file": "PROJECT/finetune/data/sft_base_train.jsonl",
+    "val_file": "PROJECT/finetune/data/sft_base_val.jsonl"
+  },
+  "full_lora": {
+    "description": "base + hard positives + hard negatives",
+    "train_file": "PROJECT/finetune/data/sft_full_train.jsonl",
+    "val_file": "PROJECT/finetune/data/sft_full_val.jsonl"
+  },
+  "balanced_lora": {
+    "description": "控制电商/闲聊比例的主实验配置",
+    "train_file": "PROJECT/finetune/data/sft_balanced_train.jsonl",
+    "val_file": "PROJECT/finetune/data/sft_balanced_val.jsonl"
+  },
+  "hard_patch": {
+    "description": "仅用于 hard case ablation，不作为主结论",
+    "train_file": "PROJECT/finetune/data/sft_hard_train.jsonl",
+    "val_file": "PROJECT/finetune/data/sft_hard_val.jsonl"
+  }
+}

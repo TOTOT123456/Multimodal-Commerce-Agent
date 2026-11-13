@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.agent.project/specs/tool_catalog.schema.json",
+  "title": "E-commerce Agent Tool Catalog Item",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tool_id",
+    "server",
+    "domain",
+    "name_zh",
+    "description",
+    "input_schema_text",
+    "output_example",
+    "keyword_label",
+    "enhanced_desc",
+    "positive_phrases",
+    "negative_boundary",
+    "confusable_tools",
+    "operation_type",
+    "depends_on"
+  ],
+  "properties": {
+    "tool_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Stable English function name, unique across the catalog."
+    },
+    "server": {
+      "type": "string",
+      "pattern": "^mcp-[a-z0-9-]+$",
+      "description": "MCP server name, such as mcp-order or mcp-shop."
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Business domain used for stratification and hard negative sampling."
+    },
+    "name_zh": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Short Chinese display name."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 8,
+      "description": "Capability description and boundary."
+    },
+    "input_schema_text": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable input parameters."
+    },
+    "output_example": {
+      "type": ["object", "array", "string", "number", "boolean"],
+      "description": "Representative output example."
+    },
+    "keyword_label": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Chinese weak label used for intent keyword generation."
+    },
+    "enhanced_desc": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Tool retrieval document text, usually 20-80 Chinese characters."
+    },
+    "positive_phrases": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Typical user expressions that should trigger this tool."
+    },
+    "negative_boundary": {
+      "type": "string",
+      "minLength": 8,
+      "description": "Boundary cases where this tool should not be selected."
+    },
+    "confusable_tools": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "description": "Tool IDs that are easy to confuse with this tool."
+    },
+    "operation_type": {
+      "type": "string",
+      "enum": ["read", "write", "compute", "decision"],
+      "description": "Used to build realistic multi-tool order rules."
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "description": "Common prerequisite tool IDs in multi-tool workflows."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Optional tags for filtering and analysis."
+    },
+    "version": {
+      "type": "string",
+      "description": "Optional catalog item version or date."
+    }
+  }
+}

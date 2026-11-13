@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.agent.project/specs/multi_turn_eval.schema.json",
+  "title": "Isolated Multi-turn Tool Planning Evaluation Turn",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "conversation_id",
+    "turn_id",
+    "query",
+    "gold_tools",
+    "gold_resolved_goals",
+    "gold_cancelled_goals",
+    "gold_reference_turn_ids",
+    "context_dependency",
+    "scenario",
+    "memory_distance",
+    "source_trace_id",
+    "expression_cluster",
+    "context_skeleton",
+    "eval_split"
+  ],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "conversation_id": {"type": "string", "minLength": 1},
+    "turn_id": {"type": "integer", "minimum": 1},
+    "query": {"type": "string", "minLength": 1},
+    "gold_tools": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}
+    },
+    "gold_resolved_goals": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "gold_cancelled_goals": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "gold_reference_turn_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 1}
+    },
+    "context_dependency": {"enum": ["none", "recent", "long"]},
+    "scenario": {
+      "enum": [
+        "self_contained",
+        "reference",
+        "inheritance",
+        "cancellation",
+        "correction",
+        "reorder",
+        "long_recall",
+        "task_switch",
+        "irrelevant_history",
+        "summary_pressure",
+        "failure_fallback",
+        "session_isolation"
+      ]
+    },
+    "memory_distance": {"type": ["integer", "null"], "minimum": 0},
+    "source_trace_id": {"type": "string", "minLength": 1},
+    "expression_cluster": {"type": "string", "minLength": 1},
+    "context_skeleton": {"type": "string", "minLength": 1},
+    "eval_split": {"enum": ["dev", "test"]}
+  }
+}

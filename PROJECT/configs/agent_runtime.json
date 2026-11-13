@@ -1,0 +1,69 @@
+{
+  "schema_version": 3,
+  "status": "canonical",
+  "scope": "multi-turn ordered tool-ID planning; no tool parameters, execution or user-facing reply",
+  "canonical_route": "PROJECT/configs/retrieval_canonical_route.json",
+  "canonical_route_sha256": "76b73b7fee4997acaed352f76cb2dcdcfa154a0c9e7fed040a2775652fec34f7",
+  "required_canonical_revision": "r20p10_w040_k008_planner_dpo2_ext_dpo_s113",
+  "memory": {
+    "context_architecture": "E",
+    "recent_event_limit": 2,
+    "long_memory_top_k": 2,
+    "long_memory_timeout_ms": 100,
+    "session_ttl_seconds": 2592000,
+    "max_summary_goals": 20
+  },
+  "token_budget": {
+    "max_query_characters": 4096,
+    "target_input_tokens": 640,
+    "hard_input_tokens": 1024,
+    "max_resolved_extra_tokens": 128,
+    "planner_output_reserve": 96
+  },
+  "planning": {
+    "catalog_alias_guard": true,
+    "recent_over_generic_long": true,
+    "natural_request_boundary_guard": true,
+    "single_tool_goal_normalization": true,
+    "whole_turn_reference_replay": true,
+    "standalone_multigoal_guard": true,
+    "whole_turn_plan_cache": true
+  },
+  "model_artifacts": {
+    "verify_adapter_hash": false,
+    "restored_checkpoint_accepted": true,
+    "intent_adapter_actual_sha256": "df46a2aaaa2d210ec5bd5797c102089972ecf8dc909ba4c2b049a8bd04df7fb2",
+    "planner_adapter_actual_sha256": "e7b615810e6d616f34bb8aa5dac760b50571cb993777ee75d633a23cdab50aeb"
+  },
+  "selection_status": {
+    "status": "locked_on_natural_short_memory_evaluation",
+    "selected_config_id": "E3-n2-k2-t640",
+    "selected_label": "l_final_cache",
+    "protocol": "PROJECT/data/agent/_aux/natural_short_memory_evaluation/protocol.json",
+    "results": "PROJECT/data/agent/_aux/natural_short_memory_evaluation/results_final.json",
+    "development": {
+      "conversations": 991,
+      "mixed_correct": 957,
+      "mixed_trace_em": 0.9656912209889001,
+      "replay_correct": 581,
+      "replay_rows": 605,
+      "replay_trace_em": 0.9603305785123967,
+      "no_inherit_correct": 376,
+      "no_inherit_rows": 386,
+      "no_inherit_trace_em": 0.9740932642487047
+    },
+    "test": {
+      "conversations": 993,
+      "mixed_correct": 939,
+      "mixed_trace_em": 0.945619335347432,
+      "replay_correct": 568,
+      "replay_rows": 612,
+      "replay_trace_em": 0.9281045751633987,
+      "no_inherit_correct": 371,
+      "no_inherit_rows": 381,
+      "no_inherit_trace_em": 0.973753280839895,
+      "planner_calls": 394,
+      "planner_call_reduction": 0.6032225579053374
+    }
+  }
+}

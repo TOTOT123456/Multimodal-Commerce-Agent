@@ -1,0 +1,11 @@
+seed: 20260706
+test_ratio: 0.2
+smoke_min_test_per_tool: 1
+formal_min_test_per_tool: 30
+stratify_by:
+  - tool_id
+  - tool_count
+  - domain
+freeze_outputs:
+  - PROJECT/data/tool_call_trace/test.jsonl
+  - PROJECT/data/intent_recognition/intent_all.jsonl

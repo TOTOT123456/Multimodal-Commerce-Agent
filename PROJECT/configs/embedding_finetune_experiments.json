@@ -1,0 +1,156 @@
+{
+  "selected_model": {
+    "model_key": "bge-large",
+    "model_name_or_path": "BAAI/bge-large-zh-v1.5",
+    "recipe": "easy2",
+    "seed": 20260731,
+    "checkpoint": "PROJECT/data/rag/_aux/retrieval_pipeline_reselection/embedding_train/bge-large-reselection-easy2-s20260731/model/final",
+    "reason": "零样本架构比较先选出 bge-large；随后在同一基座、开发集和训练预算下比较五种 MNRL recipe，并以三个随机种子聚合。easy2 的 Mean AllHit@10=0.995556 且 Mean AllHit@20=1.0，因此作为完整检索链的 Embedding。"
+  },
+  "fixed_hyperparameters": {
+    "loss": "mnrl",
+    "learning_rate_grid": [1e-5, 2e-5, 3e-5],
+    "per_device_train_batch_size": 64,
+    "qwen_per_device_train_batch_size": 32,
+    "gradient_accumulation_steps": 1,
+    "warmup_ratio": 0.05,
+    "max_seq_length": 256,
+    "batch_sampler": "no_duplicates",
+    "query_instruction": "为电商导购助手检索最相关的工具描述："
+  },
+  "sweep": [
+    {
+      "run_name": "bge-base-mnrl-e0.25-lr2e-5-bs64",
+      "model_name_or_path": "BAAI/bge-base-zh-v1.5",
+      "epochs": 0.25,
+      "learning_rate": 2e-5,
+      "batch_size": 64,
+      "purpose": "bge-base epoch 下界"
+    },
+    {
+      "run_name": "bge-base-mnrl-e0.5-lr2e-5-bs64",
+      "model_name_or_path": "BAAI/bge-base-zh-v1.5",
+      "epochs": 0.5,
+      "learning_rate": 2e-5,
+      "batch_size": 64,
+      "purpose": "bge-base 中等 epoch"
+    },
+    {
+      "run_name": "bge-base-mnrl-e1-lr1e-5-bs64",
+      "model_name_or_path": "BAAI/bge-base-zh-v1.5",
+      "epochs": 1,
+      "learning_rate": 1e-5,
+      "batch_size": 64,
+      "purpose": "bge-base 低学习率"
+    },
+    {
+      "run_name": "bge-base-mnrl-e1-lr2e-5-bs64",
+      "model_name_or_path": "BAAI/bge-base-zh-v1.5",
+      "epochs": 1,
+      "learning_rate": 2e-5,
+      "batch_size": 64,
+      "purpose": "bge-base 标准 1 epoch 对照"
+    },
+    {
+      "run_name": "bge-base-mnrl-e1-lr3e-5-bs64",
+      "model_name_or_path": "BAAI/bge-base-zh-v1.5",
+      "epochs": 1,
+      "learning_rate": 3e-5,
+      "batch_size": 64,
+      "purpose": "bge-base 高学习率"
+    },
+    {
+      "run_name": "bge-base-mnrl-e1.5-lr2e-5-bs64",
+      "model_name_or_path": "BAAI/bge-base-zh-v1.5",
+      "epochs": 1.5,
+      "learning_rate": 2e-5,
+      "batch_size": 64,
+      "purpose": "bge-base 更长训练"
+    },
+    {
+      "run_name": "bge-large-mnrl-e0.5-lr2e-5-bs64",
+      "model_name_or_path": "BAAI/bge-large-zh-v1.5",
+      "epochs": 0.5,
+      "learning_rate": 2e-5,
+      "batch_size": 64,
+      "purpose": "零样本最强候选 bge-large 半轮训练"
+    },
+    {
+      "run_name": "bge-large-mnrl-e1-lr2e-5-bs64",
+      "model_name_or_path": "BAAI/bge-large-zh-v1.5",
+      "epochs": 1,
+      "learning_rate": 2e-5,
+      "batch_size": 64,
+      "purpose": "零样本最强候选 bge-large 标准 1 epoch 对照"
+    },
+    {
+      "run_name": "qwen3-embedding-0.6b-mnrl-e0.5-lr2e-5-bs32",
+      "model_name_or_path": "Qwen/Qwen3-Embedding-0.6B",
+      "epochs": 0.5,
+      "learning_rate": 2e-5,
+      "batch_size": 32,
+      "purpose": "不同 embedding 架构对照"
+    }
+  ],
+  "explicit_negative_ablation": {
+    "role": "formal_embedding_recipe_selection",
+    "model_name_or_path": "BAAI/bge-large-zh-v1.5",
+    "train_file": "PROJECT/data/rag/embedding_grouped_train.jsonl",
+    "shared_hyperparameters": {
+      "loss": "mnrl",
+      "epochs": 1,
+      "learning_rate": 2e-5,
+      "per_device_train_batch_size": 8,
+      "gradient_accumulation_steps": 8,
+      "optimizer_effective_batch_size": 64,
+      "warmup_ratio": 0.05,
+      "max_seq_length": 256,
+      "batch_sampler": "no_duplicates",
+      "precision": "fp16",
+      "seeds": [20260707, 20260731, 20260801]
+    },
+    "negative_groups": {
+      "hard": ["single_same_domain", "multi_partial_replacement"],
+      "easy": ["single_cross_domain", "multi_add_irrelevant"],
+      "all": [
+        "single_same_domain",
+        "single_cross_domain",
+        "multi_partial_replacement",
+        "multi_add_irrelevant"
+      ]
+    },
+    "design_note": "四组实验保持模型、epoch、LR、micro-batch 与梯度累积一致。bs=8 是因为 no-duplicates 会跨 anchor/positive/negative_n 全列去重；同时加入全部显式负例时每条样本含 5 个候选文档，而闭集只有 100 个工具文档。无显式负例对照用于隔离 micro-batch 变化；同领域/部分替代负例与跨领域/新增无关负例用于比较负例类型；最后一组同时加入全部显式负例。同领域和部分替代负例是数据构造阶段的类型化负例，不是模型在线挖掘负例。",
+    "runs": [
+      {
+        "run_name": "bge-large-mnrl-control-e1-lr2e-5-bs8-g8",
+        "negative_mode": "none",
+        "purpose": "与显式负例实验同 micro-batch 的正样本对照"
+      },
+      {
+        "run_name": "bge-large-mnrl-explicit-hard2-e1-lr2e-5-bs8-g8",
+        "negative_mode": "hard",
+        "purpose": "每个 query-positive pair 加 2 个同域或部分替代类型化难负例"
+      },
+      {
+        "run_name": "bge-large-mnrl-explicit-easy2-e1-lr2e-5-bs8-g8",
+        "negative_mode": "easy",
+        "purpose": "每个 query-positive pair 加 2 个跨域或新增无关负例"
+      },
+      {
+        "run_name": "bge-large-mnrl-explicit-all4-e1-lr2e-5-bs8-g8",
+        "negative_mode": "all",
+        "purpose": "每个 query-positive pair 同时加入全部 4 个类型化负例"
+      }
+    ]
+  },
+  "evaluation": {
+    "k_values": [5, 6, 7, 8, 9, 10, 15, 20, 30, 50],
+    "candidate_ns": [10, 20, 30, 50],
+    "fusion_strategies": ["union", "weighted", "rrf"],
+    "reranker_probe": "best_run_rrf_full_union",
+    "main_metric": "AllHit@K",
+    "selection_file": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_crossstyle_rag10/dpo_v2/eval_protocol/dev.jsonl",
+    "frozen_test_file": "PROJECT/data/tool_call_trace/test.jsonl",
+    "corpus": "PROJECT/data/rag/tool_corpus.jsonl"
+  }
+}

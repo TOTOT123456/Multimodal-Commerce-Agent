@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "errors": [],
+  "total": 100,
+  "by_domain": {
+    "order": 15,
+    "product": 18,
+    "promotion": 15,
+    "delivery": 12,
+    "aftersale": 15,
+    "user": 10,
+    "cart": 8,
+    "risk": 7
+  },
+  "by_server": {
+    "mcp-order": 15,
+    "mcp-shop": 18,
+    "mcp-promotion": 15,
+    "mcp-delivery": 12,
+    "mcp-aftersale": 15,
+    "mcp-user": 10,
+    "mcp-cart": 8,
+    "mcp-risk": 7
+  },
+  "by_operation_type": {
+    "read": 52,
+    "write": 27,
+    "decision": 8,
+    "compute": 13
+  },
+  "warnings": [],
+  "expected_total": 100
+}

@@ -1,0 +1,243 @@
+{
+  "schema_version": 3,
+  "status": "complete",
+  "updated_at": "2026-08-08",
+  "experiment_id": "assignment3_planner_dpo2_20260808",
+  "objective": "在固定 canonical Top-10 上，从当前 8B Planner 的真实严格语义错误构造 4000 对偏好数据，以 RPO 稳定推进后用短程纯 DPO 收敛，提高有序工具链 TraceEM",
+  "scope": "synthetic 100-tool closed set; static ordered tool selection",
+  "fixed_interface": {
+    "route": "PROJECT/configs/retrieval_canonical_route.json",
+    "reranker_depth": 20,
+    "planner_candidates": 10,
+    "candidate_order": "retrieval_order",
+    "decoding": "greedy",
+    "max_new_tokens": 96
+  },
+  "model_chain": {
+    "base_model": "PROJECT/models/Qwen/Qwen3-8B",
+    "sft": {
+      "rows": 77724,
+      "api_native_rows": 53725,
+      "legacy_train_rows": 23999,
+      "adapter": "PROJECT/finetune/outputs/tooltrace-a3-crossstyle-sft8-4x5090-s20260728/checkpoint-2429",
+      "adapter_sha256": "6dbe0693ed5ef645094e25277731e901551499507eff257b898a1778237cb5c4"
+    },
+    "starting_parent": {
+      "recipe": "DPO sigmoid",
+      "adapter": "PROJECT/finetune/outputs/tooltrace-a3-crossstyle-simple-dpo8-lr1e6-b010-s20260808/checkpoint-29",
+      "adapter_sha256": "9ee539e708a86d407b08634fa69061f6df27c005b95a4caf1c448f57710d2741",
+      "legacy6000_trace_em": 0.858,
+      "development1200_trace_em": 0.8566666666666667
+    }
+  },
+  "development_data": {
+    "rows": 1200,
+    "tool_count_distribution": {
+      "1": 600,
+      "2": 120,
+      "3": 120,
+      "4": 120,
+      "5": 120,
+      "6": 120
+    },
+    "represented_tools": 100,
+    "gold": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/data/dev_gold.jsonl",
+    "gold_sha256": "8cec0d27cf3b43d95ecff154b9fa12e0b67680e636812ebc2b1bb3f379380a8d",
+    "retrieval_input": "PROJECT/data/rag/_aux/current_canonical_dataset_retrieval/planner_dpo2_dev_20260808/rag10_label_free.jsonl",
+    "retriever_upper_bound": 0.9666666666666667,
+    "isolation": "query、trace id、表达簇和上下文骨架与训练、偏好、冻结集严格隔离",
+    "frozen_data_used_for_selection": false
+  },
+  "hard_error_mining": {
+    "policy": "只保留当前父模型在训练侧独立生成 query 上的真实、严格可解析且语义错误输出；gold 工具必须全部位于 canonical Top-10",
+    "unique_current_parent_semantic_pool": 8309,
+    "long_panel": {
+      "generated_rows": 24000,
+      "retrieval_eligible_rows": 23068,
+      "parent_trace_em": 0.7080804577761401,
+      "strict_semantic_errors": 6734,
+      "gold": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/data/hard_mining_gold.jsonl"
+    },
+    "short_panel": {
+      "generated_rows": 12000,
+      "retrieval_eligible_rows": 11867,
+      "parent_trace_em": 0.8581775511923822,
+      "strict_semantic_errors": 1683,
+      "tool_count_1_errors": 203,
+      "tool_count_2_errors": 1480,
+      "gold": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/data/hard_short_gold.jsonl"
+    }
+  },
+  "preference_data": {
+    "path": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/preferences/preferences.jsonl",
+    "sha256": "8a27860b346d2a7e37e772031004b1c85a85de8771a086a2f6920a1f38604253",
+    "pairs": 4000,
+    "train_pairs": 3600,
+    "monitor_pairs": 400,
+    "one_pair_per_query": true,
+    "one_pair_per_source_trace": true,
+    "model_aligned_rejected": true,
+    "synthetic_rejected_allowed": false,
+    "candidate_order": "original retrieval order",
+    "represented_tools": 100,
+    "by_tool_count": {
+      "1": 200,
+      "2": 600,
+      "3": 800,
+      "4": 800,
+      "5": 800,
+      "6": 800
+    },
+    "primary_error_types": {
+      "substitution": 2064,
+      "omission_only": 911,
+      "extra_only": 765,
+      "order_only": 260
+    },
+    "max_token_length": 672,
+    "training_max_length": 768,
+    "truncated_pairs": 0,
+    "audit": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/preferences/preference_audit.json",
+    "audit_sha256": "fcbe30dcca8327c2ec02a71030f911af6b2d8e5e93fba5a89ca1bf69de647a43",
+    "strict_ok": true
+  },
+  "training": {
+    "framework": "MS-SWIFT swift rlhf",
+    "hardware": "4 x NVIDIA GeForce RTX 5090",
+    "parallelization": "four independent single-GPU runs concurrently; one RTX 5090 per recipe",
+    "data_schema": "messages plus rejected_response; Qwen3 chat template",
+    "common": {
+      "beta": 0.1,
+      "max_length": 768,
+      "effective_batch_size": 16,
+      "lora_rank": 16,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "reference_adapter": "PROJECT/finetune/outputs/tooltrace-a3-crossstyle-simple-dpo8-lr1e6-b010-s20260808/checkpoint-29"
+    },
+    "main_sweep": {
+      "epochs": 1,
+      "seed": 20260817,
+      "runs": [
+        {"loss": "DPO sigmoid", "learning_rate": 5e-07, "rpo_alpha": 0.0},
+        {"loss": "DPO plus RPO", "learning_rate": 5e-07, "rpo_alpha": 0.5},
+        {"loss": "DPO plus RPO", "learning_rate": 5e-07, "rpo_alpha": 1.0},
+        {"loss": "DPO plus RPO", "learning_rate": 1e-06, "rpo_alpha": 0.5}
+      ],
+      "selected_boundary": {
+        "loss": "DPO plus RPO",
+        "learning_rate": 1e-06,
+        "rpo_alpha": 0.5,
+        "checkpoint": "PROJECT/finetune/outputs/tooltrace-a3-planner-dpo2-rpo050-lr1e6-s20260817/checkpoint-225",
+        "checkpoint_sha256": "56858042d4e833bdbc4ba4b338c93c82d839ca8e6259e427a7d097757e5eced1",
+        "development_trace_em": 0.8825
+      },
+      "audit": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/audits/training_runs_audit.json",
+      "strict_ok": true
+    },
+    "adaptive_extension": {
+      "trigger": "主搜索最优点位于训练边界，因此从该点继续 0.5 epoch，reference adapter 保持不变",
+      "epochs": 0.5,
+      "seed": 20260819,
+      "start_adapter": "PROJECT/finetune/outputs/tooltrace-a3-planner-dpo2-rpo050-lr1e6-s20260817/checkpoint-225",
+      "runs": [
+        {"loss": "DPO sigmoid", "learning_rate": 5e-07, "rpo_alpha": 0.0},
+        {"loss": "DPO plus RPO", "learning_rate": 1e-06, "rpo_alpha": 0.5},
+        {"loss": "DPO plus RPO", "learning_rate": 5e-07, "rpo_alpha": 0.5},
+        {"loss": "DPO plus RPO", "learning_rate": 2e-07, "rpo_alpha": 0.5}
+      ],
+      "audit": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/audits/extension_training_runs_audit.json",
+      "strict_ok": true
+    }
+  },
+  "selection": {
+    "primary_metric": "development original-order RAG TraceEM",
+    "secondary_metrics": [
+      "SetEM",
+      "strict output validity",
+      "conditional TraceEM"
+    ],
+    "tie_break": "beta ascending, then candidate name ascending; frozen tests excluded",
+    "evaluated_checkpoints": 28,
+    "selected_name": "ext_dpo_5_s113",
+    "selected_adapter": "PROJECT/finetune/outputs/tooltrace-a3-planner-dpo2-ext-dpo-lr5e7-s20260819/checkpoint-113",
+    "selected_adapter_sha256": "68cd6eba081afd14f82d7a084c676a9c93afea2e531c4a9b931104cae787fc1d",
+    "selected_recipe": {
+      "loss": "DPO sigmoid",
+      "learning_rate": 5e-07,
+      "beta": 0.1,
+      "extension_epochs": 0.5,
+      "seed": 20260819
+    },
+    "development": {
+      "trace_em": 0.8883333333333333,
+      "set_em": 0.8891666666666667,
+      "strict_output_valid_rate": 0.9983333333333333,
+      "conditional_trace_em": 0.9189655172413793,
+      "delta_from_starting_parent_percentage_points": 3.166666666666662,
+      "paired_improved": 42,
+      "paired_regressed": 4,
+      "exact_mcnemar_two_sided_p": 5.100190492157708e-09
+    },
+    "lock": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/selection/dpo_checkpoint_selection.json",
+    "lock_sha256": "61ada043a461ab00a3292df06a1c63ecfb47c2f1448a8d83759072b53ab7f82f",
+    "frozen_tests_used_for_selection": false
+  },
+  "frozen_evaluation": {
+    "opened_after_selection_lock": true,
+    "legacy6000": {
+      "retriever_upper_bound": 0.9736666666666667,
+      "set_em": 0.892,
+      "trace_em": 0.8893333333333333,
+      "strict_output_valid_rate": 0.9988333333333334,
+      "conditional_trace_em": 0.9133858267716536,
+      "delta_from_starting_parent_percentage_points": 3.1333333333333324,
+      "paired_improved": 222,
+      "paired_regressed": 34,
+      "exact_mcnemar_two_sided_p": 5.278896161615527e-35,
+      "metrics": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/evaluation/frozen/legacy6000/selected/rag.metrics.json",
+      "metrics_sha256": "564c15659857381d9766397cfce6f9db628ef7bd58e9401c55522def3be60de7"
+    },
+    "api1000": {
+      "retriever_upper_bound": 1.0,
+      "set_em": 0.994,
+      "trace_em": 0.994,
+      "strict_output_valid_rate": 1.0,
+      "delta_from_starting_parent_percentage_points": -0.10000000000000009,
+      "paired_improved": 1,
+      "paired_regressed": 2,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "metrics": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/evaluation/frozen/api1000/selected/rag.metrics.json",
+      "metrics_sha256": "77900e93a75dcc593e4003e66aa5f10afd01ea677cc26ac57d7914594c64992c"
+    },
+    "static_system9000": {
+      "intent_route_accuracy": 1.0,
+      "full_set": 0.928,
+      "full_trace": 0.9262222222222222,
+      "full_set_count": 8352,
+      "full_trace_count": 8336,
+      "delta_from_starting_parent_percentage_points": 2.0888888888888846,
+      "metrics": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/evaluation/system9000/selected/system.metrics.json",
+      "metrics_sha256": "cb2a4fb2c828a5f2027081a905e4607ff6ef5f5c8c111c4206566dbf86763af3",
+      "is_real_tool_execution_success": false
+    }
+  },
+  "audits": {
+    "preference_provenance_strict_ok": true,
+    "preference_isolation_strict_ok": true,
+    "preference_token_length_strict_ok": true,
+    "preference_vs_development_overlap": 0,
+    "preference_vs_frozen_overlap": 0,
+    "training_materialization_strict_ok": true
+  },
+  "evidence": {
+    "final_summary": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/final_summary.json",
+    "final_summary_sha256": "b32a0a0dac5e772149fe7353907988f3b14c5606e3b2ce26d00b71a124ba58e9",
+    "report": "PROJECT/reports/07_Planner再训练_20260808.md"
+  },
+  "limitations": [
+    "Full Trace 是静态路由与有序工具选择指标，不等价于真实工具执行成功率",
+    "结论适用于 100 工具合成闭集",
+    "API frozen 出现 1 个净回退，锁定后未据此修改端点"
+  ]
+}

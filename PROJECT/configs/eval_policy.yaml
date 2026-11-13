@@ -1,0 +1,19 @@
+intent:
+  labels:
+    - 电商类
+    - 闲聊类
+  metrics:
+    - accuracy
+    - macro_f1
+    - ecommerce_empty_keyword_rate
+retrieval:
+  k_values: [3, 5, 8, 10, 15, 20]
+  metrics:
+    - AllHit@K
+    - Hit@K
+    - Recall@K
+    - Precision@K
+    - MRR
+reports:
+  no_fabricated_results: true
+  require_metric_source_paths: true

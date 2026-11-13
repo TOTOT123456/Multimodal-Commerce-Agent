@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "task": "assignment3_100tool_crossstyle_rag10_dpo",
+  "protocol_frozen_at": "2026-07-29",
+  "status": "protocol_frozen_before_formal_preference_selection_and_dpo_training",
+  "reference": {
+    "pdf": "KNOWLEDGE/LLM电商导购助手高阶-实验作业-3.pdf",
+    "pdf_sha256": "d1038eb6a01ea848af9afbb8621c2b3adc3bf807d395abf9bb5823a4d96b09b4",
+    "adapted_requirements": [
+      "Use the gold answer as chosen and a real wrong model generation as rejected.",
+      "Use both the current SFT endpoint and different model versions as negative generators.",
+      "Keep the preference set within the PDF recommendation of 2000 to 5000 pairs.",
+      "Train Qwen3-4B and Qwen3-8B with LoRA DPO and compare against their SFT parents."
+    ]
+  },
+  "parent_sft": {
+    "data": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_crossstyle_rag10/sft_compact.jsonl",
+    "data_sha256": "fb6fd18a38450596eb9a630662886f320602cc9ede6a2f1fe0672ae64e995103",
+    "qwen3_4b": {
+      "checkpoint": "PROJECT/finetune/outputs/tooltrace-a3-crossstyle-rag10-sft4-e1-lr5e5-bs16/checkpoint-2429",
+      "adapter_model_sha256": "415343d8a20b8ab4f0b3ae31b2194f3234f98b422dfe2ec41446027c5ed05605"
+    },
+    "qwen3_8b": {
+      "checkpoint": "PROJECT/finetune/outputs/tooltrace-a3-crossstyle-rag10-sft8-e1-lr5e5-bs16/checkpoint-2429",
+      "adapter_model_sha256": "0c71259b301c6fdf93c56b2be7c7d2258baf7e353c3ad7cd3d94602a84d34c2b"
+    }
+  },
+  "preference_mining": {
+    "input": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_crossstyle_rag10/dpo/mining_label_free.jsonl",
+    "input_sha256": "b267437aa6afa84370765f3e631aa37c792bc1260e3d52cc7629ce91f3f6e46b",
+    "rows": 27000,
+    "source_rows": {
+      "assignment3_api_native_train": 13500,
+      "legacy_train": 13500
+    },
+    "tool_count_weights_per_source": {
+      "1": 0.1,
+      "2": 0.15,
+      "3": 0.2,
+      "4": 0.2,
+      "5": 0.2,
+      "6": 0.15
+    },
+    "candidate_protocol": "deployment-equivalent tuned RAG Top-10; every mining row contains every gold tool",
+    "adaptive_stop": "Each generator may stop before all 27000 rows once the audited selector can form exactly 5000 balanced real-error pairs with all strict gates passing; resumable partial shards are retained.",
+    "negative_generators_in_priority_order": [
+      "current cross-style Qwen3-4B SFT, temperature=0.7, top_p=0.9, top_k=40",
+      "pre-cross-style API-native Qwen3-4B and Qwen3-8B SFT endpoints, greedy",
+      "early API-native Qwen3-4B SFT step-20, temperature=0.7, top_p=0.9, top_k=40"
+    ],
+    "calibration": {
+      "rows": 2000,
+      "source_balance": "1000 API-native train and 1000 Legacy train",
+      "current_4b_temperature_0_7_wrong": 5,
+      "current_4b_temperature_1_0_wrong": 5,
+      "current_8b_temperature_1_0_wrong": 2,
+      "early_4b_temperature_0_7_wrong": 1011,
+      "decision": "Temperature 1.0 did not increase current-endpoint error yield; retain 0.7 and add closer pre-cross-style SFT endpoints before using early-step errors."
+    }
+  },
+  "preference_selection": {
+    "target_pairs": 5000,
+    "pairs_per_style": 2500,
+    "max_pairs_per_query": 2,
+    "minimum_semantic_error_ratio": 0.9,
+    "synthetic_or_rule_generated_rejected_allowed": false,
+    "order_only_pair_requires_explicit_language_or_catalog_dependency_evidence": true,
+    "monitor_split_percent_by_trace_id": 10,
+    "frozen_or_dev_rows_allowed_in_pair_construction": false
+  },
+  "dpo_grid": {
+    "models": [
+      "Qwen3-4B",
+      "Qwen3-8B"
+    ],
+    "betas": [
+      0.05,
+      0.1
+    ],
+    "epochs": 1,
+    "learning_rate": 5e-06,
+    "loss_type": "sigmoid",
+    "max_length": 768,
+    "effective_global_batch_size": 16,
+    "lora": {
+      "rank": 16,
+      "alpha": 32,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "seed": 20260729,
+    "checkpoint_policy": "save every 100 steps and retain the completed one-epoch endpoint"
+  },
+  "checkpoint_selection": {
+    "split": "assignment3_api_native_dev_2400",
+    "split_rows": 2400,
+    "retrieval_allhit_at_10": 0.95,
+    "frozen_tests_used": false,
+    "rank_order": [
+      "RAG-hit-conditional TraceEM descending",
+      "RAG-hit-conditional SetEM descending",
+      "overall TraceEM descending",
+      "strict output rate descending",
+      "beta ascending"
+    ],
+    "select_4b_and_8b_independently": true,
+    "compare_against_parent_sft": true
+  },
+  "post_selection_evaluation": {
+    "api_native_frozen_1k": "one evaluation per selected DPO checkpoint",
+    "legacy_frozen_6k": "one evaluation per selected DPO checkpoint",
+    "legacy_static_system_9k": "combine Legacy 6k tool predictions with the fixed intent predictions",
+    "no_post_frozen_tuning_or_checkpoint_reselection": true,
+    "api_native_and_legacy_metrics_must_not_be_merged": true
+  },
+  "isolation": {
+    "legacy_frozen": "PROJECT/data/tool_call_trace/test.jsonl",
+    "api_native_frozen": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_100tool_api/test_api/test.jsonl",
+    "selection_dev": "PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/dev.jsonl",
+    "training_overlap_required": 0
+  },
+  "scope": "100-tool synthetic closed-set static tool planning; not live tool execution or online generalization"
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "task": "assignment3_sft_data_scale_and_hyperparameter_ablation",
+  "selection_split": "assignment3_api_native_dev_2400",
+  "official_test_selection_use": false,
+  "data": {
+    "seed": 20260726,
+    "sizes": [9000, 18000, 36000, 54000],
+    "construction_ratios": {
+      "single_intent": 0.3333333333333333,
+      "multi_candidate_order_shuffled": 0.4444444444444444,
+      "multi_same_type_distractors": 0.2222222222222222
+    },
+    "nested_subsets": true
+  },
+  "fixed_training": {
+    "effective_batch_size": 32,
+    "max_length": 2048,
+    "lora_alpha_to_rank": 2.0,
+    "target_modules": "all-linear",
+    "lr_scheduler_type": "cosine",
+    "warmup_ratio": 0.05,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "seed": 20260725,
+    "data_seed": 20260725,
+    "model_batch": {
+      "4b": {
+        "per_device_train_batch_size": 8,
+        "gradient_accumulation_steps": 4
+      },
+      "8b": {
+        "per_device_train_batch_size": 4,
+        "gradient_accumulation_steps": 8
+      }
+    }
+  },
+  "search": {
+    "minimum_data_size": 9000,
+    "round1": {
+      "name": "learning_rate_x_epoch",
+      "learning_rates": [0.00001, 0.00003, 0.00005],
+      "epochs": [1, 2, 3],
+      "fixed_rank": 16,
+      "fixed_dropout": 0.05
+    },
+    "round2": {
+      "name": "rank_x_dropout",
+      "ranks": [8, 16, 32],
+      "dropouts": [0.0, 0.05, 0.1],
+      "use_round1_best_learning_rate_and_epoch": true
+    },
+    "round3": {
+      "name": "interaction_confirmation",
+      "round1_top_n": 3,
+      "round2_top_n": 3,
+      "full_cross": true
+    },
+    "qwen3_8b_confirmation_top_n": 3,
+    "ranking": [
+      "dev_trace_em desc",
+      "dev_set_em desc",
+      "strict_output_valid_rate desc",
+      "keyword_micro_f1 desc",
+      "epochs asc",
+      "rank asc",
+      "config_id asc"
+    ]
+  },
+  "scale_ablation": {
+    "models": ["4b", "8b"],
+    "views": ["global", "rag"],
+    "reuse_selected_9000_checkpoint": true,
+    "one_fixed_selected_configuration_per_model": true
+  }
+}

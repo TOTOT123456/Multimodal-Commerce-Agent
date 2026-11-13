@@ -1,0 +1,185 @@
+{
+  "schema_version": 5,
+  "status": "canonical",
+  "updated_at": "2026-08-08",
+  "canonical_revision": "r20p10_w040_k008_planner_dpo2_ext_dpo_s113",
+  "system_revision": "intent0p6b_r20p10_w040_k008_planner_dpo2_ext_dpo_s113",
+  "scope": "synthetic 100-tool closed set; static routing and ordered tool selection",
+  "catalog": {
+    "path": "PROJECT/configs/tool_catalog.jsonl",
+    "sha256": "287cb174515d3706080e4e093b17248bb6965c4f63362c715c1c898b9101eb67"
+  },
+  "intent": {
+    "model": "Qwen3-0.6B",
+    "base_model": "Qwen/Qwen3-0.6B",
+    "recipe": "full_lora",
+    "adapter": "PROJECT/finetune/outputs/0.6b_full_lora_current20260707/checkpoint-2000",
+    "adapter_model_sha256": "765d183ec3d5da151dba6feeae3ec485ffe358e1623ad9dd500197c671094de6",
+    "system_prompt_sha256": "ec87550717cd4952f7f21435cba1e177f58975250bfbfabe340598fade53e155",
+    "max_new_tokens": 48,
+    "predictions": "PROJECT/finetune/outputs/preds/qwen3-0.6b-full_lora-context_isolated-best.jsonl",
+    "predictions_sha256": "04dc229e9ef7c15d1d434fab7086682392600472ce637e3f4399b42607676053",
+    "input": "raw_query",
+    "routing_field": "预测类型",
+    "keyword_output_consumed_by_retrieval": false,
+    "frozen_9000": {
+      "rows": 9000,
+      "ecommerce_rows": 6000,
+      "chitchat_rows": 3000,
+      "accuracy": 1.0
+    }
+  },
+  "embedding": {
+    "base_model": "BAAI/bge-large-zh-v1.5",
+    "recipe": "easy2",
+    "objective": "MNRL with explicit cross-domain and newly irrelevant negatives",
+    "query_instruction": "为电商导购助手检索最相关的工具描述：",
+    "seed": 20260731,
+    "checkpoint": "PROJECT/data/rag/_aux/retrieval_pipeline_reselection/embedding_train/bge-large-reselection-easy2-s20260731/model/final",
+    "model_sha256": "97816d9a835aa801426145da304c51780e2c7b7ce63ad083b79bf5d00df6ec86",
+    "vector_db": "PROJECT/data/rag/_aux/retrieval_pipeline_reselection/frozen_vector_db/frozen_selected_embedding",
+    "vector_embeddings_sha256": "9acbead8d0e58ae00fffe7b2f91ac716f3ba3ed680320e5df02812ac7f46721e",
+    "vector_docs_sha256": "87d8bfeaa867b35e72d359f9cae06acc3c3d792dcd19380a3329323dc6e6ff42",
+    "vector_config_sha256": "b4101ce56b07de2664874f4a05f85fef295e05232608ec78c883cb1d34f8040b",
+    "tool_corpus": "PROJECT/data/rag/tool_corpus.jsonl",
+    "tool_corpus_sha256": "6131001d8c6cabd07ce823d44e704618f8c107d51ace6f87e4af4b12e984d420"
+  },
+  "first_stage": {
+    "sources": [
+      "bm25",
+      "embedding"
+    ],
+    "candidate_n_per_source": 40,
+    "vector_weight": 0.8,
+    "rrf_k": 5
+  },
+  "reranker": {
+    "base_model": "BAAI/bge-reranker-v2-m3",
+    "training_objective": "groupwise cross-entropy",
+    "negative_recipe": "mixed_typed3_mined4",
+    "learning_rate": 2e-05,
+    "seed": 20260731,
+    "candidate_k": 20,
+    "checkpoint": "PROJECT/data/rag/_aux/retrieval_pipeline_reselection/reranker_train/bge_v2_m3-mixed_typed3_mined4-lr2em5-s20260731",
+    "model_sha256": "d1ac0366b5ac2a99110aef8e4a9d005b27b0bc736d039bfe552259a799380d6d"
+  },
+  "second_stage": {
+    "sources": [
+      "first_stage",
+      "reranker"
+    ],
+    "source_weight": 0.4,
+    "rrf_k": 8,
+    "output_k": 10,
+    "candidate_universe": "exact reranker Top-20; every Planner-visible tool has a cross-encoder score",
+    "preserve_full_ranking": false,
+    "selection_lock": "PROJECT/data/tool_call_trace/_aux/assignment3/r20p10_second_rrf_optimization_20260801/selection.lock.json",
+    "protected_splits_used_for_selection": false
+  },
+  "planner": {
+    "model": "Qwen3-8B",
+    "base_model": "PROJECT/models/Qwen/Qwen3-8B",
+    "adapter": "PROJECT/finetune/outputs/tooltrace-a3-planner-dpo2-ext-dpo-lr5e7-s20260819/checkpoint-113",
+    "adapter_model_sha256": "68cd6eba081afd14f82d7a084c676a9c93afea2e531c4a9b931104cae787fc1d",
+    "training_stages": [
+      "cross-style SFT",
+      "RPO main stage",
+      "DPO adaptive extension"
+    ],
+    "candidate_k": 10,
+    "candidate_order": "retrieval_order",
+    "prompt_version": "tool-trace-v1",
+    "system_prompt_sha256": "7334d1d5bbb16d4b523bcc6965cc72bd9394600fdbdcaa64c22d6b41052ca1eb",
+    "decoding": "greedy",
+    "max_new_tokens": 96,
+    "sft": {
+      "rows": 77724,
+      "api_native_rows": 53725,
+      "legacy_train_rows": 23999,
+      "candidate_k": 10,
+      "epochs": 1,
+      "learning_rate": 5e-05,
+      "effective_batch_size": 32,
+      "lora_rank": 16,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "adapter": "PROJECT/finetune/outputs/tooltrace-a3-crossstyle-sft8-4x5090-s20260728/checkpoint-2429",
+      "adapter_model_sha256": "6dbe0693ed5ef645094e25277731e901551499507eff257b898a1778237cb5c4"
+    },
+    "dpo": {
+      "experiment_id": "assignment3_planner_dpo2_20260808",
+      "preference_pairs": 4000,
+      "train_pairs": 3600,
+      "monitor_pairs": 400,
+      "preference_data": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/preferences/preferences.jsonl",
+      "preference_data_sha256": "8a27860b346d2a7e37e772031004b1c85a85de8771a086a2f6920a1f38604253",
+      "preference_policy": "current-parent strict semantic errors, original candidate order, unique query/source, balanced tool-count and error-type strata",
+      "main_stage": {
+        "loss": "DPO plus RPO chosen-NLL anchor",
+        "rpo_alpha": 0.5,
+        "learning_rate": 1e-06,
+        "beta": 0.1,
+        "epochs": 1,
+        "seed": 20260817,
+        "checkpoint": "PROJECT/finetune/outputs/tooltrace-a3-planner-dpo2-rpo050-lr1e6-s20260817/checkpoint-225",
+        "checkpoint_sha256": "56858042d4e833bdbc4ba4b338c93c82d839ca8e6259e427a7d097757e5eced1"
+      },
+      "extension_stage": {
+        "trigger": "best development checkpoint was the main-stage boundary",
+        "loss": "DPO sigmoid",
+        "learning_rate": 5e-07,
+        "beta": 0.1,
+        "epochs": 0.5,
+        "seed": 20260819,
+        "reference_adapter": "PROJECT/finetune/outputs/tooltrace-a3-crossstyle-simple-dpo8-lr1e6-b010-s20260808/checkpoint-29",
+        "reference_adapter_sha256": "9ee539e708a86d407b08634fa69061f6df27c005b95a4caf1c448f57710d2741"
+      },
+      "adapter": "PROJECT/finetune/outputs/tooltrace-a3-planner-dpo2-ext-dpo-lr5e7-s20260819/checkpoint-113",
+      "adapter_model_sha256": "68cd6eba081afd14f82d7a084c676a9c93afea2e531c4a9b931104cae787fc1d",
+      "development_rows": 1200,
+      "development_retriever_upper_bound": 0.9666666666666667,
+      "development_trace_em": 0.8883333333333333,
+      "development_conditional_trace_em": 0.9189655172413793,
+      "candidate_count_evaluated": 28,
+      "selection": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/selection/dpo_checkpoint_selection.json",
+      "selection_sha256": "61ada043a461ab00a3292df06a1c63ecfb47c2f1448a8d83759072b53ab7f82f",
+      "frozen_data_used_for_training_or_selection": false
+    }
+  },
+  "evaluation": {
+    "retrieval_legacy6000": {
+      "all_hit_at_10": 0.9736666666666667
+    },
+    "planner_legacy6000": {
+      "set_em": 0.892,
+      "trace_em": 0.8893333333333333,
+      "strict_output_valid_rate": 0.9988333333333334,
+      "conditional_trace_em": 0.9133858267716536,
+      "metrics": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/evaluation/frozen/legacy6000/selected/rag.metrics.json",
+      "metrics_sha256": "564c15659857381d9766397cfce6f9db628ef7bd58e9401c55522def3be60de7"
+    },
+    "planner_api1000": {
+      "set_em": 0.994,
+      "trace_em": 0.994,
+      "strict_output_valid_rate": 1.0,
+      "metrics": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/evaluation/frozen/api1000/selected/rag.metrics.json",
+      "metrics_sha256": "77900e93a75dcc593e4003e66aa5f10afd01ea677cc26ac57d7914594c64992c"
+    },
+    "static_system9000": {
+      "route_accuracy": 1.0,
+      "full_set": 0.928,
+      "full_trace": 0.9262222222222222,
+      "full_set_count": 8352,
+      "full_trace_count": 8336,
+      "is_real_tool_execution_success": false,
+      "metrics": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/evaluation/system9000/selected/system.metrics.json",
+      "metrics_sha256": "cb2a4fb2c828a5f2027081a905e4607ff6ef5f5c8c111c4206566dbf86763af3"
+    }
+  },
+  "evidence": {
+    "final_summary": "PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_planner_dpo2_20260808/final_summary.json",
+    "final_summary_sha256": "b32a0a0dac5e772149fe7353907988f3b14c5606e3b2ce26d00b71a124ba58e9",
+    "planner_report": "PROJECT/reports/07_Planner再训练_20260808.md",
+    "assignment_report": "PROJECT/reports/06_Assignment3_100工具实验总报告.md"
+  }
+}

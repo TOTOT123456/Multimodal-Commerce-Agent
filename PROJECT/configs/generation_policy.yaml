@@ -1,0 +1,15 @@
+# 100-tool deterministic data generation policy.
+# Heavy LLM generation can replace these scripts later, but generated files must
+# keep the same dataset contract and must pass PROJECT/scripts/dataset/audit_datasets.py.
+seed: 20260706
+single_intent:
+  smoke_per_tool: 5
+  formal_per_tool: 150
+multi_intent:
+  smoke_target: 500
+  formal_target: 15000
+  min_tools: 2
+  max_tools: 6
+text_rules:
+  forbid_english_tool_id_in_question: true
+  deduplicate_by_normalized_question: true

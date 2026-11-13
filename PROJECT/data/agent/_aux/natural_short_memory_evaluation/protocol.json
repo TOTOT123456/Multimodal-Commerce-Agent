@@ -1,0 +1,529 @@
+{
+  "schema_version": 1,
+  "status": "built_before_candidate_evaluation",
+  "design_lock_sha256": "960676df154b3bcf724b6282ecb831eb7e702d78c2f2bd351f18d084a285a94a",
+  "scope": "natural short ecommerce sessions with replay and anti-inheritance controls",
+  "counts": {
+    "dev": {
+      "scheduled_conversations": 1000,
+      "conversations": 991,
+      "audited_exclusions": 9,
+      "executed_rows": 2793,
+      "conversation_length": {
+        "min": 2,
+        "mean": 2.8183652875882945,
+        "max": 7
+      },
+      "target_kind": {
+        "natural_replay": 605,
+        "standalone_switch": 386
+      },
+      "replay_distance": {
+        "1": 344,
+        "2": 136,
+        "3": 80,
+        "4": 34,
+        "5": 11
+      },
+      "reference_family": {
+        "implicit_confirmation": 209,
+        "object_anchor": 184,
+        "recent_resume": 212
+      },
+      "replay_tool_count": {
+        "1": 241,
+        "2": 47,
+        "3": 98,
+        "4": 80,
+        "5": 74,
+        "6": 65
+      }
+    },
+    "test": {
+      "scheduled_conversations": 1000,
+      "conversations": 993,
+      "audited_exclusions": 7,
+      "executed_rows": 2835,
+      "conversation_length": {
+        "min": 2,
+        "mean": 2.8549848942598186,
+        "max": 7
+      },
+      "target_kind": {
+        "natural_replay": 612,
+        "standalone_switch": 381
+      },
+      "replay_distance": {
+        "1": 349,
+        "2": 138,
+        "3": 75,
+        "4": 36,
+        "5": 14
+      },
+      "reference_family": {
+        "implicit_confirmation": 204,
+        "object_anchor": 192,
+        "recent_resume": 216
+      },
+      "replay_tool_count": {
+        "1": 223,
+        "2": 43,
+        "3": 112,
+        "4": 80,
+        "5": 72,
+        "6": 82
+      }
+    }
+  },
+  "audits": {
+    "dev": {
+      "rows": 2793,
+      "conversations": 991,
+      "split": "dev",
+      "protected_rows": 42400,
+      "query_overlap": 0,
+      "source_trace_id_overlap": 0,
+      "expression_cluster_overlap": 0,
+      "context_skeleton_overlap": 0,
+      "ordered_tool_combination_overlap": 43,
+      "unordered_tool_combination_overlap": 65,
+      "tool_combination_isolation_required": false,
+      "duplicate_unscored_queries_allowed": true,
+      "duplicate_unscored_query_occurrences": 804,
+      "duplicate_scored_queries_allowed": true,
+      "duplicate_scored_query_occurrences": 144,
+      "unique_normalized_queries": 1845,
+      "strict_ok": true
+    },
+    "test": {
+      "rows": 2835,
+      "conversations": 993,
+      "split": "test",
+      "protected_rows": 42400,
+      "query_overlap": 0,
+      "source_trace_id_overlap": 0,
+      "expression_cluster_overlap": 0,
+      "context_skeleton_overlap": 0,
+      "ordered_tool_combination_overlap": 37,
+      "unordered_tool_combination_overlap": 52,
+      "tool_combination_isolation_required": false,
+      "duplicate_unscored_queries_allowed": true,
+      "duplicate_unscored_query_occurrences": 847,
+      "duplicate_scored_queries_allowed": true,
+      "duplicate_scored_query_occurrences": 59,
+      "unique_normalized_queries": 1929,
+      "strict_ok": true
+    }
+  },
+  "generation_quality": {
+    "dev": {
+      "source": {
+        "strict_ok": true,
+        "rows": 1386,
+        "generator_model": "gpt-5.4-mini",
+        "judge_model": "gpt-5.5"
+      },
+      "targets": {
+        "status": "complete_with_audited_exclusions",
+        "strict_ok": true,
+        "plan": "/renyuanliu/Agent/PROJECT/data/agent/_aux/natural_short_memory_evaluation/target_generation/dev/plan.jsonl",
+        "plan_sha256": "f8b9a63bb6679e37385d4101c1701a559f0349578ea53bcfc711aca085ab851c",
+        "rows": 1000,
+        "accepted": 991,
+        "acceptance_rate": 0.991,
+        "min_acceptance_rate": 0.98,
+        "missing": [
+          "prodmem_dev_00197",
+          "prodmem_dev_00352",
+          "prodmem_dev_00415",
+          "prodmem_dev_00529",
+          "prodmem_dev_00626",
+          "prodmem_dev_00628",
+          "prodmem_dev_00684",
+          "prodmem_dev_00860",
+          "prodmem_dev_00918"
+        ],
+        "exclusions": [
+          {
+            "case_id": "prodmem_dev_00197",
+            "target_kind": "natural_replay",
+            "reference_family": "recent_resume",
+            "attempts": 20,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 20
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_dev_00352",
+            "target_kind": "natural_replay",
+            "reference_family": "recent_resume",
+            "attempts": 20,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 6,
+              "judge_continues_whole_source_intent": 13,
+              "judge_no_source_action_details": 3,
+              "judge_recency_valid": 10,
+              "judge_unique_reference": 10,
+              "source_detail_list": 1
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_dev_00415",
+            "target_kind": "natural_replay",
+            "reference_family": "object_anchor",
+            "attempts": 20,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 9,
+              "invalid_recency": 9,
+              "judge_continues_whole_source_intent": 4,
+              "judge_recency_valid": 1,
+              "judge_unique_reference": 5
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_dev_00529",
+            "target_kind": "natural_replay",
+            "reference_family": "object_anchor",
+            "attempts": 20,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 8,
+              "invalid_recency": 8,
+              "judge_continues_whole_source_intent": 5
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_dev_00626",
+            "target_kind": "natural_replay",
+            "reference_family": "object_anchor",
+            "attempts": 20,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 20,
+              "invalid_recency": 7
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_dev_00628",
+            "target_kind": "natural_replay",
+            "reference_family": "object_anchor",
+            "attempts": 20,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 20,
+              "invalid_recency": 5
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_dev_00684",
+            "target_kind": "natural_replay",
+            "reference_family": "recent_resume",
+            "attempts": 20,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 20,
+              "source_detail_list": 1
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_dev_00860",
+            "target_kind": "natural_replay",
+            "reference_family": "object_anchor",
+            "attempts": 20,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 20,
+              "invalid_recency": 6
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_dev_00918",
+            "target_kind": "natural_replay",
+            "reference_family": "object_anchor",
+            "attempts": 20,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 15,
+              "invalid_recency": 7,
+              "judge_continues_whole_source_intent": 3,
+              "judge_unique_reference": 3
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          }
+        ],
+        "audited_exclusions_ok": true,
+        "target_kind": {
+          "contextual_new_action": 0,
+          "natural_replay": 605,
+          "standalone_switch": 386
+        },
+        "generator_model": "gpt-5.4-mini",
+        "judge_model": "gpt-5.5",
+        "generator_prompt_version": "natural-short-memory-target-generator",
+        "judge_prompt_version": "natural-short-memory-target-judge",
+        "generator_prompt_sha256_by_kind": {
+          "natural_replay": "ff4b224b88bc2b1da01698bcb1462a254976273345308572a0b1a71bd7cde154",
+          "contextual_new_action": "e4e00f72e35e3f1bd64e90082ff48ea347900ac8e22ab11f74444658de7e9c2e",
+          "standalone_switch": "112881cd9130992aa2447dd0580f39ae3fcf3e923332091436b4b1ac58fb642f"
+        },
+        "judge_prompt_sha256_by_kind": {
+          "natural_replay": "0d52f59de91b08f2c191a488478b53b203a60d03bee489414cc9a20d6cefa642",
+          "contextual_new_action": "d6f732fc7e1d597459e47ee85f32a3fe2b9a6a56ed045f7500c617814eddbcc2",
+          "standalone_switch": "d31ae0da4df4b0ed88174c7975acba86b9efa2d25c115b65bf7714304811c859"
+        },
+        "semantic_judge_passed_rows": 605,
+        "duplicate_count": 144,
+        "static_failure_count": 0,
+        "judge_failure_count": 0,
+        "generated_blocked_query_overlap": 0,
+        "blocked_artifacts": [
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/tool_call_trace/train.jsonl",
+            "rows": 24000,
+            "sha256": "2ce0ff426ae1feb96bac345d3f13e4c2ef00ea3a56b4b2531e17245da028ce1f"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/tool_call_trace/test.jsonl",
+            "rows": 6000,
+            "sha256": "c7886215f96e2967b8309f3000e6d9178aca5f91c3c1bb744a1a8a4892249de0"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/intent_recognition/intent_all.jsonl",
+            "rows": 9000,
+            "sha256": "aace70a3cd5bc5b4b9e1471f7a226d7abd074f5655c24021f786f06ddb5f69d2"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/dev.jsonl",
+            "rows": 2400,
+            "sha256": "91dfa0bdc4f63e3349f75321b8a55ef815f891e2d0f9524727f305aa8a4ed6b7"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_100tool_api/test_api/test.jsonl",
+            "rows": 1000,
+            "sha256": "af63fc44a8c6633b355889afe5de0c66b3da7890f671e20fc16fc2bc18acc1e6"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/agent/_aux/natural_short_memory_evaluation/source_generation/dev/dev.jsonl",
+            "rows": 1386,
+            "sha256": "e927ed078dba412fd103afe8d312755057920ce5566a772645fc0320556f4ae2"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/agent/_aux/natural_short_memory_evaluation/source_generation/test/test.jsonl",
+            "rows": 1381,
+            "sha256": "a8f97ec9fe5ed4d59afeafab397045f85b373270ca96cbf4b2d36e94ee7f7f8f"
+          }
+        ],
+        "accepted_sha256": "740ad3314dd37c0e6798e097c5ae492e209299cb6eb4eae51634268f7e783c3c",
+        "attempts_sha256": "b576b9bfbf9ffc21f6a35b24201a52f6ad1990c588216fb3b7e1e0b0a6dbc25a"
+      }
+    },
+    "test": {
+      "source": {
+        "strict_ok": true,
+        "rows": 1381,
+        "generator_model": "gpt-5.4-mini",
+        "judge_model": "gpt-5.5"
+      },
+      "targets": {
+        "status": "complete_with_audited_exclusions",
+        "strict_ok": true,
+        "plan": "/renyuanliu/Agent/PROJECT/data/agent/_aux/natural_short_memory_evaluation/target_generation/test/plan.jsonl",
+        "plan_sha256": "753c4b04dde33d8c8f2960deeb395cfdc44af2b249291a86f0dd9280424157ee",
+        "rows": 1000,
+        "accepted": 993,
+        "acceptance_rate": 0.993,
+        "min_acceptance_rate": 0.98,
+        "missing": [
+          "prodmem_test_00042",
+          "prodmem_test_00256",
+          "prodmem_test_00518",
+          "prodmem_test_00674",
+          "prodmem_test_00756",
+          "prodmem_test_00928",
+          "prodmem_test_00949"
+        ],
+        "exclusions": [
+          {
+            "case_id": "prodmem_test_00042",
+            "target_kind": "natural_replay",
+            "reference_family": "object_anchor",
+            "attempts": 24,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 23,
+              "invalid_recency": 5,
+              "missing_natural_history_signal": 3
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_test_00256",
+            "target_kind": "natural_replay",
+            "reference_family": "recent_resume",
+            "attempts": 24,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 14,
+              "judge_continues_whole_source_intent": 10,
+              "judge_natural": 1,
+              "judge_recency_valid": 8,
+              "judge_unique_reference": 9
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_test_00518",
+            "target_kind": "natural_replay",
+            "reference_family": "object_anchor",
+            "attempts": 24,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 23,
+              "invalid_recency": 9
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_test_00674",
+            "target_kind": "natural_replay",
+            "reference_family": "implicit_confirmation",
+            "attempts": 24,
+            "issue_counts": {
+              "invalid_implicit_confirmation": 24,
+              "source_detail_list": 1
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_test_00756",
+            "target_kind": "natural_replay",
+            "reference_family": "object_anchor",
+            "attempts": 24,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 23,
+              "invalid_recency": 6
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_test_00928",
+            "target_kind": "natural_replay",
+            "reference_family": "object_anchor",
+            "attempts": 24,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 24,
+              "source_detail_list": 6
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          },
+          {
+            "case_id": "prodmem_test_00949",
+            "target_kind": "natural_replay",
+            "reference_family": "object_anchor",
+            "attempts": 24,
+            "issue_counts": {
+              "ambiguous_whole_source_scope": 15,
+              "invalid_recency": 8,
+              "judge_continues_whole_source_intent": 3,
+              "judge_recency_valid": 3,
+              "judge_unique_reference": 3,
+              "missing_natural_history_signal": 1
+            },
+            "policy_reason": "failed pre-evaluation naturalness or semantic-clarity audit"
+          }
+        ],
+        "audited_exclusions_ok": true,
+        "target_kind": {
+          "contextual_new_action": 0,
+          "natural_replay": 612,
+          "standalone_switch": 381
+        },
+        "generator_model": "gpt-5.4-mini",
+        "judge_model": "gpt-5.5",
+        "generator_prompt_version": "natural-short-memory-target-generator",
+        "judge_prompt_version": "natural-short-memory-target-judge",
+        "generator_prompt_sha256_by_kind": {
+          "natural_replay": "ff4b224b88bc2b1da01698bcb1462a254976273345308572a0b1a71bd7cde154",
+          "contextual_new_action": "e4e00f72e35e3f1bd64e90082ff48ea347900ac8e22ab11f74444658de7e9c2e",
+          "standalone_switch": "112881cd9130992aa2447dd0580f39ae3fcf3e923332091436b4b1ac58fb642f"
+        },
+        "judge_prompt_sha256_by_kind": {
+          "natural_replay": "0d52f59de91b08f2c191a488478b53b203a60d03bee489414cc9a20d6cefa642",
+          "contextual_new_action": "d6f732fc7e1d597459e47ee85f32a3fe2b9a6a56ed045f7500c617814eddbcc2",
+          "standalone_switch": "d31ae0da4df4b0ed88174c7975acba86b9efa2d25c115b65bf7714304811c859"
+        },
+        "semantic_judge_passed_rows": 612,
+        "duplicate_count": 59,
+        "static_failure_count": 0,
+        "judge_failure_count": 0,
+        "generated_blocked_query_overlap": 0,
+        "blocked_artifacts": [
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/tool_call_trace/train.jsonl",
+            "rows": 24000,
+            "sha256": "2ce0ff426ae1feb96bac345d3f13e4c2ef00ea3a56b4b2531e17245da028ce1f"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/tool_call_trace/test.jsonl",
+            "rows": 6000,
+            "sha256": "c7886215f96e2967b8309f3000e6d9178aca5f91c3c1bb744a1a8a4892249de0"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/intent_recognition/intent_all.jsonl",
+            "rows": 9000,
+            "sha256": "aace70a3cd5bc5b4b9e1471f7a226d7abd074f5655c24021f786f06ddb5f69d2"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/tool_call_trace/_aux/assignment3/api_native_dev_2400/dev.jsonl",
+            "rows": 2400,
+            "sha256": "91dfa0bdc4f63e3349f75321b8a55ef815f891e2d0f9524727f305aa8a4ed6b7"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/tool_call_trace/_aux/assignment3/assignment3_100tool_api/test_api/test.jsonl",
+            "rows": 1000,
+            "sha256": "af63fc44a8c6633b355889afe5de0c66b3da7890f671e20fc16fc2bc18acc1e6"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/agent/_aux/natural_short_memory_evaluation/source_generation/dev/dev.jsonl",
+            "rows": 1386,
+            "sha256": "e927ed078dba412fd103afe8d312755057920ce5566a772645fc0320556f4ae2"
+          },
+          {
+            "path": "/renyuanliu/Agent/PROJECT/data/agent/_aux/natural_short_memory_evaluation/source_generation/test/test.jsonl",
+            "rows": 1381,
+            "sha256": "a8f97ec9fe5ed4d59afeafab397045f85b373270ca96cbf4b2d36e94ee7f7f8f"
+          }
+        ],
+        "accepted_sha256": "1a9cfbf8754fc979e56cba672fb543d71b2bdb0602b7302477118e83742502f4",
+        "attempts_sha256": "47265deaab0b8c72c61250df8818e65c43334ad76ae263acba085fe42185d7c2"
+      }
+    }
+  },
+  "isolation": {
+    "dev_test_normalized_query_overlap": 0,
+    "dev_test_scored_target_query_overlap": 0,
+    "dev_test_source_or_distractor_query_overlap": 0,
+    "dev_test_full_conversation_overlap": 0,
+    "generic_target_query_overlap_allowed": true,
+    "generic_overlap_reason": "short confirmations such as 行就这么办 are naturally reusable; gold labels remain bound to isolated histories",
+    "query_free_tool_plans": true,
+    "external_agent_evaluation_samples_reused": false,
+    "frozen_data_used_as_generation_source": false,
+    "test_candidate_outputs_opened_before_lock": false
+  },
+  "artifacts": {
+    "dev": {
+      "dataset": "PROJECT/data/agent/_aux/natural_short_memory_evaluation/dev.jsonl",
+      "dataset_sha256": "2725d128e203b66d0d603e8c8462eb077433b6fe1230157d8852893ae37abf3a",
+      "target_plan_sha256": "f8b9a63bb6679e37385d4101c1701a559f0349578ea53bcfc711aca085ab851c",
+      "accepted_target_sha256": "740ad3314dd37c0e6798e097c5ae492e209299cb6eb4eae51634268f7e783c3c",
+      "target_metadata_sha256": "ea0689abd61aea200b5ca7d563b4b405fe5042691e6504ca5a3bf112efb00e63"
+    },
+    "test": {
+      "dataset": "PROJECT/data/agent/_aux/natural_short_memory_evaluation/test.jsonl",
+      "dataset_sha256": "d194fe2ea3b35e23875d15885ca18c1bb8a956761aab812fb75517c079331ea3",
+      "target_plan_sha256": "753c4b04dde33d8c8f2960deeb395cfdc44af2b249291a86f0dd9280424157ee",
+      "accepted_target_sha256": "1a9cfbf8754fc979e56cba672fb543d71b2bdb0602b7302477118e83742502f4",
+      "target_metadata_sha256": "e4aef2693805584c547f152128b2664cc30ced067d5e2de582e153ff588cc42b"
+    }
+  }
+}
