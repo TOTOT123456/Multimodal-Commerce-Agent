@@ -87,3 +87,8 @@ Thumbs.db
 /PROJECT/data/rag/embedding_test.jsonl
 /PROJECT/data/tool_call_trace/multi_intent.jsonl
 /PROJECT/data/tool_call_trace/single_intent.jsonl
+/PROJECT/data/intent_recognition/_aux/
+/PROJECT/data/intent_recognition/chitchat.jsonl
+/PROJECT/data/intent_recognition/ecommerce.jsonl
+/PROJECT/finetune/
+/PROJECT/reports/agent_qa_68_20260919/
